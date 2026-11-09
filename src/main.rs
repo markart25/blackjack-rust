@@ -68,14 +68,14 @@ fn print_card(value: i32) {
 
 fn print_card_d() {
     println!("┌─────────┐");
-    println!("│^^^^^^^^^│");
-    println!("│vvvvvvvvv│");
-    println!("│^^^^^^^^^│");
-    println!("│vvvvvvvvv│");
-    println!("│^^^^^^^^^│");
+    println!("│/////////│");
+    println!("│/////////│");
+    println!("│/////////│");
+    println!("│/////////│");
+    println!("│/////////│");
     println!("└─────────┘");
 }
-
+//
 
 fn main() {
 
