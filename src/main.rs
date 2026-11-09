@@ -20,18 +20,22 @@ fn get_user_play() -> bool {
 }
 
 fn get_user_bet(chips_av: i32) -> i32 {
+    let mut bet: i32;
     loop{
         println!("Your Bet:");
         let mut input = String::new();
         io::stdin()
             .read_line(&mut input)
             .expect("Failed to read line");
-        let input: i32 = input.trim().parse().expect("Please type a valid number!");
-        if chips_av >= input{
+        bet = input.trim().parse().expect("Please type a valid number!");
+        if chips_av >= bet{
             break;
         }
+        else {
+            println!("You do not have the chips to bet {bet}\nYou have {chips_av} available")
+        }
     }
-    input
+    bet
 }
 
 fn get_user_choice() -> bool {
