@@ -38,22 +38,16 @@ fn get_user_bet(chips_av: i32) -> i32 {
     bet
 }
 
-fn get_user_choice() -> bool {
+fn get_user_choice() -> i32 {
     println!("Hit: 1\nStand: 2");
     let mut input = String::new();
-    let choice: bool;
+    let choice: i32;
     io::stdin()
         .read_line(&mut input)
         .expect("Failed to read line");
+1
 
-
-    let input2: i32 = input.trim().parse().expect("Please type a valid number!");
-
-    if input2 == 1 {
-        choice = true;
-    } else {
-        choice = false;
-    }
+    let choice: i32 = input.trim().parse().expect("Please type a valid number!");
     choice
 }
 fn print_card(value: i32) {
@@ -85,16 +79,16 @@ fn main() {
 
     let mut player_won: i32; // 1 is win 2 is loss 3 is push
     let mut player_chips: i32 =10_000;
-    let mut bet: i32 = 0;
-    let mut dealer_total: i32 = 0;
-    let mut player_total: i32 = 0;
+    let mut bet: i32;
+    let mut dealer_total: i32;
+    let mut player_total: i32;
     let mut dealer_first: i32;
     let mut dealer_hidden: i32;
-    let mut dealer_amount_aces: i32 = 0;
-    let mut player_amount_aces: i32 = 0;
-    let mut dealer_bust: bool = false;
-    let mut hit: bool; 
-    let mut bust: bool = false;
+    let mut dealer_amount_aces: i32;
+    let mut player_amount_aces: i32;
+    let mut dealer_bust: bool;
+    let mut hit: i32; 
+    let mut bust: bool;
     let mut deck: Vec<i32> = Vec::new();
     let mut card: i32;
     for _ in 0..24 {
@@ -103,6 +97,12 @@ fn main() {
     deck.shuffle(&mut rng());
 
     while get_user_play() {
+        dealer_total = 0;
+        player_total = 0;
+        dealer_amount_aces = 0;
+        player_amount_aces = 0;
+        dealer_bust = false;
+        bust = false;
         println!("Amount of chips: {player_chips}");
         bet = get_user_bet(player_chips);
         // dealer cards assign
@@ -148,24 +148,24 @@ fn main() {
         print_card(card); 
         loop{
             hit = get_user_choice();
-            if hit{
+            if hit == 1{
                 card = deck.pop().unwrap();
                 if card == 11{
                     player_amount_aces += 1
                 }
-                player_total += card;
-                print_card(card);
-                if player_total > 21{
-                    bust = true;
-                    if player_amount_aces >= 1{
-                        bust = false;
-                        player_total -= 10;
-                        player_amount_aces -= 1;
-                    }
-                    else {
-                        break;
-                    }
+            player_total += card;
+            print_card(card);
+            if player_total > 21{
+                bust = true;
+                if player_amount_aces >= 1{
+                    bust = false;
+                    player_total -= 10;
+                    player_amount_aces -= 1;
+            }
+                else {
+                    break;
                 }
+            }
             }
             else {
                 break;
