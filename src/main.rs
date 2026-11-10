@@ -1,8 +1,47 @@
+// written by mark (markart25)
+// github.com/markart25/blackjack-rust
+// markart.dev
+
+
 use rand::seq::SliceRandom;
 use rand::rng;
 use std::io;
 
 //all the functions
+
+fn welcome(){
+    println!(r#"
+           /$$ /$$                                                            
+          | $$|__/                                                            
+  /$$$$$$$| $$ /$$                                                            
+ /$$_____/| $$| $$                                                            
+| $$      | $$| $$                                                            
+| $$      | $$| $$                                                            
+|  $$$$$$$| $$| $$                                                            
+ \_______/|__/|__/                                                            
+                                                                              
+                                                                              
+                                                                              
+ /$$       /$$                     /$$                               /$$      
+| $$      | $$                    | $$                              | $$      
+| $$$$$$$ | $$  /$$$$$$   /$$$$$$$| $$   /$$ /$$  /$$$$$$   /$$$$$$$| $$   /$$
+| $$__  $$| $$ |____  $$ /$$_____/| $$  /$$/|__/ |____  $$ /$$_____/| $$  /$$/
+| $$  \ $$| $$  /$$$$$$$| $$      | $$$$$$/  /$$  /$$$$$$$| $$      | $$$$$$/ 
+| $$  | $$| $$ /$$__  $$| $$      | $$_  $$ | $$ /$$__  $$| $$      | $$_  $$ 
+| $$$$$$$/| $$|  $$$$$$$|  $$$$$$$| $$ \  $$| $$|  $$$$$$$|  $$$$$$$| $$ \  $$
+|_______/ |__/ \_______/ \_______/|__/  \__/| $$ \_______/ \_______/|__/  \__/
+                                       /$$  | $$                              
+                                      |  $$$$$$/                              
+                                       \______/                               
+    
+
+    Welcome to CLI blakjack written in rust.
+    - the rules are pretty simple as long as you know the blackjack rules. if you dont please refer to https://www.wikihow.com/Play-Blackjack or similar to learn the game
+    - this is a one player game against a dealer 
+    "#)
+}
+
+
 fn get_user_play() -> bool {
     println!("Keep Playing: 1\n Stop: 2");
     let mut input = String::new();
@@ -107,6 +146,9 @@ fn main() {
     let mut bust: bool;
     let mut deck: Vec<i32> = Vec::new();
     let mut card: i32;
+
+    welcome();
+
     for _ in 0..24 {
         deck.extend(vec![2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]);
     }
