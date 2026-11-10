@@ -42,7 +42,8 @@ fn welcome(){
 }
 
 
-fn get_user_play() -> bool {
+fn get_user_play(chips: i32) -> bool {
+    println!("Amount of chips: {chips}");
     println!("Keep Playing: 1\n Stop: 2");
     let mut input = String::new();
     let choice: bool;
@@ -154,7 +155,7 @@ fn main() {
     }
     deck.shuffle(&mut rng());
 
-    while get_user_play() {
+    while get_user_play(player_chips) {
         if deck.len() < 15 {
             println!("Reshuffling deck...");
             deck.clear();
