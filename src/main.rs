@@ -236,7 +236,7 @@ fn main() {
         print_card(card); 
         loop{
             //needs to be able to double down if first choice
-            hit = if players_first_choice && player_chips >= bet{
+            hit = if players_first_choice && player_chips >= bet * 2{
                 get_user_first_choice()
             }
             else {
@@ -263,7 +263,6 @@ fn main() {
                 }
             }
             else if hit == 3 && players_first_choice { 
-                player_chips -= bet;
                 bet += bet;
                 // same logic as a hit but forced break at the end. could be made a function but cba lowk
                 player_blackjack = false; // if they hit it wont be a natural 
