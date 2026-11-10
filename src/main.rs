@@ -69,7 +69,7 @@ fn get_user_bet(chips_av: i32) -> i32 {
             .read_line(&mut input)
             .expect("Failed to read line");
         bet = input.trim().parse().expect("Please type a valid number!");
-        if chips_av >= bet{
+        if chips_av >= bet && bet > 0 {
             break;
         }
         else {
