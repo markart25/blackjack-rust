@@ -219,9 +219,10 @@ fn main() {
                     }
                 }
             }
-            else if hit == 3 && players_first_choice {
+            else if hit == 3 && players_first_choice { 
                 player_chips -= bet;
                 bet += bet;
+                // same logic as a hit but forced break at the end. could be made a function but cba lowk
                 player_blackjack = false; // if they hit it wont be a natural 
                 card = deck.pop().unwrap();
                 if card == 11{
