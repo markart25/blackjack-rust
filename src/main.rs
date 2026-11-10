@@ -295,7 +295,7 @@ fn main() {
             println!("the dealers cards were:");
             print_card(dealer_first);
             print_card(dealer_hidden);
-            while dealer_total <= 16 {
+            while (dealer_total <= 16) || (dealer_total == 17 && dealer_amount_aces >= 1) {
                 dealer_blackjack = false; // if they hit it wont be a natural 
                 println!("dealer hits on {dealer_total}");
                 card = deck.pop().unwrap();
