@@ -91,8 +91,13 @@ fn get_user_choice() -> i32 {
 }
 
 
-fn get_user_first_choice() -> i32 {
-    println!("Hit: 1\nStand: 2\nDouble Down: 3");
+fn get_user_first_choice(first: i32, second: i32) -> i32 {
+    if first == second{
+        println!("Hit: 1\nStand: 2\nDouble Down: 3\nSplit: 4");
+    }
+    else {
+        println!("Hit: 1\nStand: 2\nDouble Down: 3");
+    }
     let mut input = String::new();
     io::stdin()
         .read_line(&mut input)
@@ -100,6 +105,95 @@ fn get_user_first_choice() -> i32 {
 
     let choice: i32 = input.trim().parse().expect("Please type a valid number!");
     choice
+}
+
+fn split(playerscard: i32, deck: &mut Vec<i32>, player_total_1: &mut i32, player_total_2: &mut i32,
+player_amount_aces_1: &mut i32, player_amount_aces_2: &mut i32, bust1: &mut bool, bust2: &mut bool) {
+    *player_total_1 = playerscard;
+    *player_total_2 = playerscard;
+    let mut hit: i32;
+    let mut card: i32;
+    card = deck.pop().unwrap();
+    if card == 11{
+    *player_amount_aces_1 += 1
+    }
+    *player_total_1 += card;
+    print_card(card);
+    if *player_total_1 > 21{
+        *bust1 = true;
+        if *player_amount_aces_1 >= 1{
+            *bust1 = false;
+            *player_total_1 -= 10;
+            *player_amount_aces_1 -= 1;
+        }
+    }   
+    loop{
+        hit = get_user_choice();
+        if hit == 1{
+            card = deck.pop().unwrap();
+            if card == 11{
+                *player_amount_aces_1 += 1
+            }
+            *player_total_1 += card;
+            print_card(card);
+            if *player_total_1 > 21{
+                *bust1 = true;
+                if *player_amount_aces_1 >= 1{
+                    *bust1 = false;
+                    *player_total_1 -= 10;
+                    *player_amount_aces_1 -= 1;
+                    }
+                else {
+                    break;
+                }
+            }
+        }
+        else{
+            break;
+        }
+    }
+    println!("----------\nNEXT HAND");
+    card = deck.pop().unwrap();
+    if card == 11{
+    *player_amount_aces_2 += 1
+    }
+    *player_total_2 += card;
+    print_card(card);
+    if *player_total_2 > 21{
+        *bust2 = true;
+        if *player_amount_aces_2 >= 1{
+            *bust2 = false;
+            *player_total_2 -= 10;
+            *player_amount_aces_2 -= 1;
+        }
+    }
+    loop{
+        hit = get_user_choice();
+        if hit == 1{
+            card = deck.pop().unwrap();
+            if card == 11{
+                *player_amount_aces_2 += 1
+            }
+            *player_total_2 += card;
+            print_card(card);
+            if *player_total_2 > 21{
+                *bust2 = true;
+                if *player_amount_aces_2 >= 1{
+                    *bust2 = false;
+                    *player_total_2 -= 10;
+                    *player_amount_aces_2 -= 1;
+                }
+                else {
+                    break;
+                }
+            }
+        }
+        else{
+            break;
+        }
+    }
+
+
 }
 
 fn print_card(value: i32) {
@@ -134,17 +228,24 @@ fn main() {
     let mut player_blackjack: bool = false;
     let mut dealer_blackjack: bool = false;
     let mut player_won: i32; // 1 is win 2 is loss 3 is push
+    let mut player_won_2: i32 = 0; 
     let mut player_chips: i32 =10_000;
     let mut bet: i32;
     let mut dealer_total: i32;
     let mut player_total: i32;
+    let mut player_total_2: i32;
     let mut dealer_first: i32;
+    let mut players_first: i32;
+    let mut players_second: i32;
+    let mut player_split: bool;
     let mut dealer_hidden: i32;
     let mut dealer_amount_aces: i32;
     let mut player_amount_aces: i32;
+    let mut player_amount_aces_2: i32;
     let mut dealer_bust: bool;
     let mut hit: i32; 
     let mut bust: bool;
+    let mut bust2: bool;
     let mut deck: Vec<i32> = Vec::new();
     let mut card: i32;
 
@@ -172,8 +273,14 @@ fn main() {
         dealer_bust = false;
         bust = false;
         players_first_choice = true;
+        player_total_2 = 0;
+        player_amount_aces_2 = 0;
+        bust2 = false;
+        player_split = false;
         println!("Amount of chips: {player_chips}");
         bet = get_user_bet(player_chips);
+
+
         // dealer cards assign
         println!("----------\nDEALER CARDS");
         card = deck.pop().unwrap();
@@ -190,6 +297,7 @@ fn main() {
         dealer_total += card; 
         dealer_hidden = card;
         print_card_d();
+
 
         //some ace and natural logic
         if dealer_total > 21 && dealer_amount_aces >= 1{
@@ -211,14 +319,18 @@ fn main() {
             player_amount_aces += 1
         }
         player_total += card;
+        players_first = card;
         print_card(card);
+
+
         card = deck.pop().unwrap();
+        player_total += card;
+        players_second = card;
 
         //some ace and natural logic
         if card == 11{
             player_amount_aces += 1
         }
-        player_total += card;
         if player_total > 21 && player_amount_aces >= 1{
             player_total -= 10;
             player_amount_aces -= 1;
@@ -237,7 +349,7 @@ fn main() {
         loop{
             //needs to be able to double down if first choice
             hit = if players_first_choice && player_chips >= bet * 2{
-                get_user_first_choice()
+                get_user_first_choice(players_first, players_second)
             }
             else {
                 get_user_choice()
@@ -282,6 +394,13 @@ fn main() {
                 }
                 break;
             }
+            else if hit == 4 && players_first == players_second{
+                // split logic 
+                player_split = true;
+                split(players_first, &mut deck, &mut player_total, &mut player_total_2,
+&mut player_amount_aces, &mut player_amount_aces_2,&mut bust, &mut bust2);
+                break;
+            }
             else {
                 break;
             }
@@ -289,7 +408,7 @@ fn main() {
         }
 
         // dealer continued logic
-        if !bust {
+        if !bust || !bust2 {
             println!("----------\nDEALER CARDS CONTINUED");
             println!("the dealers cards were:");
             print_card(dealer_first);
@@ -345,6 +464,31 @@ fn main() {
             println!("YOU LOST");
             player_won = 2;
         }
+
+        if player_split{
+            if bust2 && !dealer_bust{
+                println!("BUST");
+                player_won_2 = 2;
+            }
+            else if player_total_2 > dealer_total {
+                println!("YOU WON");
+                player_won_2 = 1;
+            }
+            else if dealer_bust{
+                println!("YOU WON DEALER IS BUST");
+                player_won_2 = 1;
+            }
+            else if player_total_2 == dealer_total {
+                println!("PUSH");
+                player_won_2 = 3;
+                
+            }
+            else{
+                println!("YOU LOST");
+                player_won_2 = 2;
+            }
+        
+        }
         
 
         // chips assign
@@ -353,6 +497,15 @@ fn main() {
         }
         else if player_won == 2 {
             player_chips -= bet;
+        }
+
+        if player_split{
+            if player_won_2 == 1{
+                player_chips += bet;
+            }
+        else if player_won_2 == 2 {
+                player_chips -= bet;
+            }
         }
     }
 }
