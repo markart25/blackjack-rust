@@ -355,6 +355,7 @@ fn main() {
 
         //hit player logic
         print_card(card); 
+        // player hit loop skips if dealers peeks and its natural
         if !dealer_blackjack{
             loop{
                 //needs to be able to double down if first choice
