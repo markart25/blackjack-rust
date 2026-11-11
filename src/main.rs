@@ -111,6 +111,10 @@ fn split(playerscard: i32, deck: &mut Vec<i32>, player_total_1: &mut i32, player
 player_amount_aces_1: &mut i32, player_amount_aces_2: &mut i32, bust1: &mut bool, bust2: &mut bool) {
     *player_total_1 = playerscard;
     *player_total_2 = playerscard;
+    if playerscard == 11{
+        *player_amount_aces_1 = 1;
+        *player_amount_aces_2 = 1;
+    }
     let mut hit: i32;
     let mut card: i32;
     card = deck.pop().unwrap();
@@ -224,11 +228,11 @@ fn print_card_d() {
 // main ig
 
 fn main() {
-    let mut players_first_choice: bool = true;
-    let mut player_blackjack: bool = false;
-    let mut dealer_blackjack: bool = false;
-    let mut player_won: i32; // 1 is win 2 is loss 3 is push
-    let mut player_won_2: i32 = 0; 
+    let mut players_first_choice: bool;
+    let mut player_blackjack: bool;
+    let mut dealer_blackjack: bool;
+    let mut player_won: i32; // 1 is win 2 is loss 3 is push 4 pays 3:2 
+    let mut player_won_2: i32; 
     let mut player_chips: i32 =10_000;
     let mut bet: i32;
     let mut dealer_total: i32;
@@ -256,7 +260,7 @@ fn main() {
     }
     deck.shuffle(&mut rng());
 
-    while get_user_play(player_chips) {
+    while player_chips > 0 && get_user_play(player_chips) {
         if deck.len() < 15 {
             println!("Reshuffling deck...");
             deck.clear();
@@ -277,6 +281,10 @@ fn main() {
         player_amount_aces_2 = 0;
         bust2 = false;
         player_split = false;
+        player_blackjack = false;
+        dealer_blackjack = false;
+        player_won = 0;
+        player_won_2 = 0;
         println!("Amount of chips: {player_chips}");
         bet = get_user_bet(player_chips);
 
@@ -299,6 +307,7 @@ fn main() {
         print_card_d();
 
 
+
         //some ace and natural logic
         if dealer_total > 21 && dealer_amount_aces >= 1{
             dealer_total -= 10;
@@ -311,7 +320,7 @@ fn main() {
         else{
             dealer_blackjack = false;
         }
-
+        
         //player cards
         println!("----------\nPLAYER CARDS");
         card = deck.pop().unwrap();
@@ -346,69 +355,74 @@ fn main() {
 
         //hit player logic
         print_card(card); 
-        loop{
-            //needs to be able to double down if first choice
-            hit = if players_first_choice && player_chips >= bet * 2{
-                get_user_first_choice(players_first, players_second)
-            }
-            else {
-                get_user_choice()
-            };
-            if hit == 1{
-                player_blackjack = false; // if they hit it wont be a natural 
-                card = deck.pop().unwrap();
-                if card == 11{
-                    player_amount_aces += 1
+        if !dealer_blackjack{
+            loop{
+                //needs to be able to double down if first choice
+                hit = if players_first_choice && player_chips >= bet * 2{
+                    get_user_first_choice(players_first, players_second)
                 }
-                player_total += card;
-                print_card(card);
-                if player_total > 21{
-                    bust = true;
-                    if player_amount_aces >= 1{
-                        bust = false;
-                        player_total -= 10;
-                        player_amount_aces -= 1;
-                }
-                    else {
-                        break;
+                else {
+                    get_user_choice()
+                };
+                if hit == 1{
+                    player_blackjack = false; // if they hit it wont be a natural 
+                    card = deck.pop().unwrap();
+                    if card == 11{
+                        player_amount_aces += 1
+                    }
+                    player_total += card;
+                    print_card(card);
+                    if player_total > 21{
+                        bust = true;
+                        if player_amount_aces >= 1{
+                            bust = false;
+                            player_total -= 10;
+                            player_amount_aces -= 1;
+                    }
+                        else {
+                            break;
+                        }
                     }
                 }
-            }
-            else if hit == 3 && players_first_choice { 
-                bet += bet;
-                // same logic as a hit but forced break at the end. could be made a function but cba lowk
-                player_blackjack = false; // if they hit it wont be a natural 
-                card = deck.pop().unwrap();
-                if card == 11{
-                    player_amount_aces += 1
-                }
-                player_total += card;
-                print_card(card);
-                if player_total > 21{
-                    bust = true;
-                    if player_amount_aces >= 1{
-                        bust = false;
-                        player_total -= 10;
-                        player_amount_aces -= 1;
+                else if hit == 3 && players_first_choice && player_chips >= bet * 2{ 
+                    bet += bet;
+                    // same logic as a hit but forced break at the end. could be made a function but cba lowk
+                    player_blackjack = false; // if they hit it wont be a natural 
+                    card = deck.pop().unwrap();
+                    if card == 11{
+                        player_amount_aces += 1
                     }
+                    player_total += card;
+                    print_card(card);
+                    if player_total > 21{
+                        bust = true;
+                        if player_amount_aces >= 1{
+                            bust = false;
+                            player_total -= 10;
+                            player_amount_aces -= 1;
+                        }
+                    }
+                    break;
                 }
-                break;
-            }
-            else if hit == 4 && players_first == players_second{
-                // split logic 
-                player_split = true;
-                split(players_first, &mut deck, &mut player_total, &mut player_total_2,
+                else if hit == 4 && players_first == players_second && players_first_choice && player_chips >= bet * 2{
+                    // split logic 
+                    player_split = true;
+                    split(players_first, &mut deck, &mut player_total, &mut player_total_2,
 &mut player_amount_aces, &mut player_amount_aces_2,&mut bust, &mut bust2);
-                break;
+                    break;
+                }
+                else {
+                    break;
+                }
+                players_first_choice = false;
             }
-            else {
-                break;
-            }
-            players_first_choice = false;
+        }
+        else{
+            println!("DEALER HAS NATURAL BLACKJACK")
         }
 
         // dealer continued logic
-        if !bust || !bust2 {
+        if !bust || (player_split && !bust2) {
             println!("----------\nDEALER CARDS CONTINUED");
             println!("the dealers cards were:");
             print_card(dealer_first);
@@ -434,22 +448,34 @@ fn main() {
         }
 
         //win logic
-        if bust && !dealer_bust{
+        if bust {
             println!("BUST");
             player_won = 2;
         }
         else if player_total > dealer_total {
-            println!("YOU WON");
-            player_won = 1;
+            if player_blackjack{
+                println!("YOU WON with natural");
+                player_won = 4;
+            }
+            else {
+                println!("YOU WON");
+                player_won = 1;
+            }
         }
         else if dealer_bust{
-            println!("YOU WON DEALER IS BUST");
-            player_won = 1;
+            if player_blackjack{
+                println!("YOU WON with natural");
+                player_won = 4;
+            }
+            else{
+                println!("YOU WON DEALER IS BUST");
+                player_won = 1;
+            }
         }
         else if player_total == dealer_total {
             if player_blackjack && !dealer_blackjack{
                 println!("YOU WON due to having natural");
-                player_won = 1;
+                player_won = 4;
             }
             else if dealer_blackjack && !player_blackjack {
                 println!("YOU LOST due to dealer having natural");
@@ -466,7 +492,7 @@ fn main() {
         }
 
         if player_split{
-            if bust2 && !dealer_bust{
+            if bust2 {
                 println!("BUST");
                 player_won_2 = 2;
             }
@@ -479,9 +505,14 @@ fn main() {
                 player_won_2 = 1;
             }
             else if player_total_2 == dealer_total {
-                println!("PUSH");
-                player_won_2 = 3;
-                
+                if dealer_blackjack{
+                    println!("YOU LOST due to dealer having natural");
+                    player_won_2 = 2;
+                }
+                else{
+                    println!("PUSH");
+                    player_won_2 = 3; 
+                }
             }
             else{
                 println!("YOU LOST");
@@ -498,6 +529,9 @@ fn main() {
         else if player_won == 2 {
             player_chips -= bet;
         }
+        else if player_won == 4 {
+            player_chips += bet * 3 / 2;
+        }
 
         if player_split{
             if player_won_2 == 1{
@@ -507,5 +541,8 @@ fn main() {
                 player_chips -= bet;
             }
         }
+    }
+    if player_chips == 0{
+        println!("You ran out of chips")
     }
 }

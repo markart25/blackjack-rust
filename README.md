@@ -8,8 +8,11 @@ features:
 - fully working cli game
 - all realistic logic like:
     - double down
+    - split
     - natural blackjack vs with hit
     - 4 decks of cards that reshuffel at 14 cards or less
+    - natural pays 3:2
+    - dealer peek
 - chips
 
 ## how to Run
